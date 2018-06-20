@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>p5.bots program</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+<script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.4/p5.min.js"></script>
+<script src="http://endreymarcell.hu/p5v4/p5.play.js"></script>
+<script src="http://endreymarcell.hu/p5v4/p5bots.min.js"></script>
+<script src="http://endreymarcell.hu/p5v4/marca-helpers.js"></script>
+<script src=".poti.js"></script>
+<!--
+Használat:
+Tedd a gépen egy könyvtárba ezt a fájlt, és az ebben hivatkozott js-t (itt .poti.js)
+$ npm install -g p5bots-server
+$ ls /dev/cu.usbserial*
+Másold ki a port nevét, amire az Arduino csatlakoztatva van, és írd bele a JS fájlba
+$ bots-go -d .
+Aztán localhost:8000
+-->
+</body>
+</html>

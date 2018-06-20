@@ -1,0 +1,29 @@
+#!/bin/sh
+
+# wipe the public folder after sanity check
+if [[ $(basename $(pwd)) == private && -d ../public ]]; then
+    rm -rf ../public/*
+fi
+
+# recreate directories
+for dir in `find . -type d -not -path '*/\.*' -not -path .`
+do
+    [[ ! -d ../public/${dir:2} ]] && mkdir ../public/${dir:2}
+done
+
+# copy relevant text files but filter contents
+for item in `find . -type f -not -path '*/\.*' -not -path ./pub -not -path *.png -not -path *.jpg -not -path ./OWNERS`
+do
+    grep -v '///' $item > ../public/${item:2}
+done
+
+# copy images
+for item in `find . -type f -not -path '*/\.*' -path *.png`
+do
+    cp $item ../public/${item:2}
+done
+
+for item in `find . -type f -not -path '*/\.*' -path *.jpg`
+do
+    cp $item ../public/${item:2}
+done

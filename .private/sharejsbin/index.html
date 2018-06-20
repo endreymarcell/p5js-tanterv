@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="description" content="p5 redirector">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>p5.js redirect</title>
+    <style>
+        html, body {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        #container {
+            width: 100%;
+            height: 350px;
+            font-size: 14pt;
+            text-align: center;
+        }
+
+        #container a, a:hover, a:active, a:visited {
+            text-decoration: none;
+            color: rgb(56, 186, 234);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <img src="/logo.png" /><br />
+        <div>Átirányítás <span id="countdown">3</span>s múlva:</div>
+        <div><a id="jsbin-link" href="">hali</a></div>
+    </div>
+    <script>
+        var isProduction = window.location.host.indexOf('sharejsbin.com') !== -1;
+        var jsbinUrl = window.location.href.replace('sharejsbin.com', 'jsbin.com').replace('https://', 'http://');
+        var linkElement = document.getElementById('jsbin-link');
+        var countdownElement = document.getElementById('countdown');
+        linkElement.innerHTML = linkElement.href = jsbinUrl;
+        setInterval(function() {
+            countdownElement.innerHTML = Math.max(parseInt(countdownElement.innerHTML) - 1, 1)
+        }, 1000);
+        if (isProduction) {
+            setTimeout(function() { window.location.replace(jsbinUrl) }, 3000);
+        }
+    </script>
+</body>
+</html>

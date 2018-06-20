@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<meta name="robots" content="noindex">
+<html>
+
+<head>
+    <meta name="description" content="p5v4 sprite basics (pusher server)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>p5.js programming</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.4/p5.min.js"></script>
+    <script src="http://endreymarcell.hu/p5v4/p5.play.js"></script>
+    <script src="http://endreymarcell.hu/p5v4/marca-helpers.js"></script>
+    <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+    <script src="http://endreymarcell.hu/p5v4/pusher-adapter.js"></script>
+    <style id="jsbin-css">
+    body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+   }
+   </style>
+</head>
+
+<body>
+    <script id="jsbin-javascript">
+        function setup() {
+            createCanvas(windowWidth, windowHeight)
+        }
+
+        function draw() {
+            background("white")
+            allSprites.draw()
+        }
+
+        function messageReceived(data) {
+            print(data)
+        }
+    </script>
+</body>
+
+</html>

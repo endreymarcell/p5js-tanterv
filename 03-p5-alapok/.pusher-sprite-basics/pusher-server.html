@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<meta name="robots" content="noindex">
+<html>
+
+<head>
+    <meta name="description" content="p5v4 sprite basics (pusher server)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>p5.js programming</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.4/p5.min.js"></script>
+    <script src="http://endreymarcell.hu/p5v4/p5.play.js"></script>
+    <script src="http://endreymarcell.hu/p5v4/marca-helpers.js"></script>
+    <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+    <style id="jsbin-css">
+    body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+   }
+   </style>
+</head>
+
+<body>
+    <script id="jsbin-javascript">
+        DEBUG = false
+        Pusher.logToConsole = false
+        REMOVAL_TIMEOUT_MS = 6000
+
+        pusher = new Pusher('27e612f403f7fb32f8ec', {
+            cluster: 'eu',
+            encrypted: true,
+            authEndpoint: 'https://marca-p5-pusher-auth.herokuapp.com/pusher/auth/'
+        })
+
+        localData = {}
+
+        channel = pusher.subscribe('private-p5-skool')
+        channel.bind('client-sprite-data', function(data) {
+            for (i = 0; i < data.spriteData.length; i += 1) {
+                spriteData = data.spriteData[i]
+                sprite = getSpriteById(spriteData.spriteId)
+                if (!sprite) {
+                    sprite = createSprite()
+                    localData[spriteData.spriteId] = sprite
+                    debugLog('Created a new sprite ' + spriteData.spriteId)
+                }
+                updateSpriteFromData(sprite, spriteData)
+            }
+        })
+
+        removeDeadSpritesInterval = setInterval(removeDeadSprites, 1000)
+
+        function updateSpriteFromData(sprite, spriteData) {
+            sprite.spriteId = spriteData.spriteId
+            sprite.position.x = spriteData.positionX
+            sprite.position.y = spriteData.positionY
+            sprite.width = spriteData.width
+            sprite.height = spriteData.height
+            sprite.rotation = spriteData.rotation
+            sprite.shapeColor = color(
+                spriteData.shapeColor.red,
+                spriteData.shapeColor.green,
+                spriteData.shapeColor.blue,
+                spriteData.shapeColor.alpha
+            )
+            sprite.lastHeartbeat = Date.now()
+        }
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight)
+            noStroke()
+            textAlign("right")
+        }
+
+        function draw() {
+            background("white")
+
+            fill(160)
+            text("Server", width - 50, 50)
+            text(allSprites.length + " sprites", width - 50, 90)
+            isOnline = window.pusher && pusher.channels && pusher.channels.channels && pusher.channels.channels['private-p5-skool'] && pusher.channels.channels['private-p5-skool'].subscribed
+            fill(isOnline ? "lightgreen" : "red")
+            text(isOnline ? 'online' : 'offline', width - 50, 70)
+
+
+            allSprites.draw()
+        }
+
+        function removeDeadSprites() {
+            now = Date.now()
+            spriteIds = allSprites.map(function(sprite) { return sprite.spriteId })
+            for (i = 0; i < spriteIds.length; i += 1) {
+                sprite = getSpriteById(spriteIds[i])
+                if (sprite && (now - sprite.lastHeartbeat > REMOVAL_TIMEOUT_MS)) {
+                    debugLog('Deleting sprite ' + sprite.spriteId + ' due to inactivity')
+                    sprite.remove()
+                    delete(localData[sprite.spriteId])
+                }
+            }
+        }
+
+        function getSpriteById(spriteId) {
+            return localData[spriteId]
+            for (i = 0; i < allSprites.length; i += 1) {
+                if (allSprites[i].spriteId == spriteId) {
+                    return allSprites[i]
+                }
+            }
+            return undefined
+        }
+
+        function debugLog(message) {
+            if (DEBUG) {
+                console.log('DEBUG: ' + message)
+            }
+        }
+    </script>
+</body>
+
+</html>

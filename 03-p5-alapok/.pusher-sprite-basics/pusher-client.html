@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<meta name="robots" content="noindex">
+<html>
+
+<head>
+    <meta name="description" content="p5v4 sprite basics (pusher client)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>p5.js programming</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.4/p5.min.js"></script>
+    <script src="http://endreymarcell.hu/p5v4/p5.play.js"></script>
+    <script src="http://endreymarcell.hu/p5v4/marca-helpers.js"></script>
+    <script src="https://js.pusher.com/4.1/pusher.min.js"></script>
+    <style id="jsbin-css">
+    body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+   }
+   </style>
+</head>
+
+<body>
+    <script id="jsbin-javascript">
+        DEBUG = false
+        Pusher.logToConsole = false
+        HEARTBEAT_FREQUENCY_MS = 2500
+
+        pusher = new Pusher('27e612f403f7fb32f8ec', {
+            cluster: 'eu',
+            encrypted: true,
+            authEndpoint: 'https://marca-p5-pusher-auth.herokuapp.com/pusher/auth/'
+        });
+        
+        channel = pusher.subscribe('private-p5-skool')
+
+        clientId = Date.now() + '-' + Math.round(10000 * Math.random())
+        
+        function sendSpriteData() {
+            channel.trigger('client-sprite-data', {
+                clientId: clientId,
+                spriteData: getSpriteData()
+            })
+        }
+
+        function getSpriteData() {
+            if (typeof window.allSprites === 'undefined') {
+                return
+            }
+
+            tagAllSpritesWithUniqueId()
+
+            return allSprites.map(function(sprite) {
+                if (typeof(sprite.shapeColor == "string")) {
+                    sprite.shapeColor = color(sprite.shapeColor)
+                }
+                return {
+                    spriteId: sprite.spriteId,
+                    positionX: sprite.position.x,
+                    positionY: sprite.position.y,
+                    rotation: sprite.rotation,
+                    width: sprite.width,
+                    height: sprite.height,
+                    shapeColor: {
+                        red: red(sprite.shapeColor),
+                        green: green(sprite.shapeColor),
+                        blue: blue(sprite.shapeColor),
+                        alpha: alpha(sprite.shapeColor),
+                    },
+                }
+            })
+        }
+
+        function tagAllSpritesWithUniqueId() {
+            spriteId = Date.now()
+            idCounter = 0
+            for (i = 0; i < allSprites.length; i += 1) {
+                sprite = allSprites[i]
+                if (!sprite.hasOwnProperty('spriteId')) {
+                    sprite.spriteId = clientId + '-' + spriteId + '-' + idCounter
+                    debugLog('Sprite got a unique id: ' + sprite.spriteId)
+                }
+                idCounter += 1
+            }
+        }
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight)
+            myInterval = setInterval(sendSpriteData, HEARTBEAT_FREQUENCY_MS)
+            noStroke()
+            textAlign("right")
+        }
+
+        function draw() {
+            background("white")
+
+            fill(160)
+            text("Client", width - 50, 50)
+            isOnline = window.pusher && pusher.channels && pusher.channels.channels && pusher.channels.channels['private-p5-skool'] && pusher.channels.channels['private-p5-skool'].subscribed
+            fill(isOnline ? "lightgreen" : "red")
+            text(isOnline ? 'online' : 'offline', width - 50, 70)
+
+            allSprites.draw()
+        }
+
+        function debugLog(message) {
+            if (DEBUG) {
+                console.log('DEBUG: ' + message)
+            }
+        }
+    </script>
+</body>
+
+</html>

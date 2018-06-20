@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="description" content="p5.paint">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+	<title>p5.js programming</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.5.4/p5.min.js"></script>
+	<script src="http://endreymarcell.hu/p5v2/p5.play.js"></script>
+    <script src="http://endreymarcell.hu/p5v2/marca-helpers.js"></script>
+    <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    </style>
+</head>
+
+<body>
+</body>
+<script>
+function setup() {
+    createCanvas(windowWidth, windowHeight)
+    mode = "point"
+    myStrokeColor = "black"
+    myFillColor = "white"
+    strokeW = 10
+    lastCommand = "// commands will appear here"
+    drawing = false
+    putPoint = false
+    fromX = fromY = backupPixels = null
+
+    pointModeSprite = createSprite(50, 50, 70, 30)
+    pointModeSprite.draw = pointModeDraw
+    pointModeSprite.mouseActive = true
+    lineModeSprite = createSprite(50, 80, 70, 30)
+    lineModeSprite.draw = lineModeDraw
+    lineModeSprite.mouseActive = true
+    rectModeSprite = createSprite(50, 110, 70, 30)
+    rectModeSprite.draw = rectModeDraw
+    rectModeSprite.mouseActive = true
+    circleModeSprite = createSprite(50, 140, 70, 30)
+    circleModeSprite.draw = circleModeDraw
+    circleModeSprite.mouseActive = true
+
+    colorOptions = [
+        "black", "white", "red", "blue",
+        "green", "yellow", "purple", "orange"
+    ]
+    strokeColors = createGroup()
+    for (i = 0; i < colorOptions.length; i += 1) {
+        c = createSprite(34 + (i % 2) * 32, 210 + Math.floor(i / 2) * 32, 30, 30)
+        c.shapeColor = colorOptions[i]
+        c.mouseActive = true
+        strokeColors.add(c)
+    }
+    noStrokeSprite = createSprite(50, 340, 62, 30)
+    noStrokeSprite.draw = noStrokeDraw
+    noStrokeSprite.mouseActive = true
+
+    strokeMinusSprite = createSprite(30, 400, 30, 30)
+    strokeMinusSprite.draw = minusDraw
+    strokeMinusSprite.mouseActive = true
+    strokePlusSprite = createSprite(70, 400, 30, 30)
+    strokePlusSprite.draw = plusDraw
+    strokePlusSprite.mouseActive = true
+
+    fillColors = createGroup()
+    for (i = 0; i < colorOptions.length; i += 1) {
+        c = createSprite(34 + (i % 2) * 32, 470 + Math.floor(i / 2) * 32, 30, 30)
+        c.shapeColor = colorOptions[i]
+        c.mouseActive = true
+        fillColors.add(c)
+    }
+    noFillSprite = createSprite(50, 600, 62, 30)
+    noFillSprite.draw = noFillDraw
+    noFillSprite.mouseActive = true
+
+    paintWhite = createSprite(34, 700, 30, 30)
+    paintWhite.shapeColor = "white"
+    paintWhite.mouseActive = true
+    paintBlack = createSprite(68, 700, 30, 30)
+    paintBlack.shapeColor = "black"
+    paintBlack.mouseActive = true
+
+    background("white")
+    textAlign("center", "center")
+    textFont("Verdana")
+}
+
+function draw() {
+    background("white")
+    updatePixels()
+    if (myStrokeColor == "none") {
+        noStroke()
+    } else {
+        stroke(myStrokeColor)
+    }
+    strokeWeight(strokeW)
+    if (myFillColor == "none") {
+        noFill()
+    } else {
+        fill(myFillColor)
+    }
+    if (mode == "point" && putPoint) {
+        point(mouseX, mouseY)
+        putPoint = false
+    }
+    loadPixels()
+    if (mode == "rect" && drawing) {
+        rect(fromX, fromY, mouseX - fromX, mouseY - fromY)
+    }
+    if (mode == "line" && drawing) {
+        line(fromX, fromY, mouseX, mouseY)
+    }
+    if (mode == "circle" && drawing) {
+        circle(fromX, fromY, dist(mouseX, mouseY, fromX, fromY) * 2)
+    }
+    
+    drawTools()
+    drawSprites()
+}
+
+function drawTools() {
+    push()
+    noStroke()
+    fill(220)
+    rect(0, 0, 100, height)
+    rect(0, height - 50, width, height)
+    fill("black")
+    textSize(14)
+    text("MODE", 50, 20)
+    text("STROKE", 50, 180)
+    text("weight:", 35, 375)
+    text(strokeW, 80, 375)
+    text("FILL", 50, 440)
+    text("PAINT\nCANVAS", 50, 660)
+
+    textSize(20)
+    text(lastCommand, width / 2, height - 25)
+    stroke("black")
+    
+    strokeWeight(1)
+    line(0, 165, 100, 165)
+    line(0, 425, 100, 425)
+    line(0, 630, 100, 630)
+    pop()
+}
+
+function mousePressed() {
+    print("saving")
+    loadPixels()
+    backupPixels = pixels
+	if (mouseX > 100) {
+		if (mode == "point") {
+			putPoint = true
+			lastCommand = "point(" + mouseX + ", " + mouseY + ")"
+		} else {
+		    fromX = mouseX
+		    fromY = mouseY
+		    drawing = true
+		}
+	}
+}
+
+function mouseReleased() {
+	if (mode != "point" && mouseX > 100) {
+	    drawing = false
+	    loadPixels()
+	    if (mode == "line") {
+	    	lastCommand = "line(" + fromX + ", " + fromY + ", " + mouseX + ", " + mouseY + ")"
+	    } else if (mode == "rect") {
+	    	lastCommand = "rect(" + fromX + ", " + fromY + ", " + (mouseX - fromX) + ", " + (mouseY - fromY) + ")"
+	    } else if (mode == "circle") {
+	    	lastCommand = "circle(" + fromX + ", " + fromY + ", " + round(dist(mouseX, mouseY, fromX, fromY)) + ")"
+	    }
+	}
+}
+
+function mouseClicked() {
+	if (pointModeSprite.mouseIsOver) {
+		mode = "point"
+	}
+	if (lineModeSprite.mouseIsOver) {
+		mode = "line"
+	}
+	if (rectModeSprite.mouseIsOver) {
+		mode = "rect"
+	}
+	if (circleModeSprite.mouseIsOver) {
+		mode = "circle"
+	}
+
+    for (i = 0; i < strokeColors.length; i += 1) {
+        if (strokeColors[i].mouseIsOver) {
+            myStrokeColor = strokeColors[i].shapeColor
+            lastCommand = 'stroke("' + myStrokeColor + '")'
+        }
+    }
+    if (noStrokeSprite.mouseIsOver) {
+        myStrokeColor = "none"
+        lastCommand = "noStroke()"
+    }
+    if (strokeMinusSprite.mouseIsOver && strokeW > 1) {
+        strokeW -= 1
+        lastCommand = "strokeWeight(" + strokeW + ")"
+    }
+    if (strokePlusSprite.mouseIsOver) {
+        strokeW += 1
+        lastCommand = "strokeWeight(" + strokeW + ")"
+    }
+    
+    for (i = 0; i < fillColors.length; i += 1) {
+        if (fillColors[i].mouseIsOver) {
+            myFillColor = fillColors[i].shapeColor
+            lastCommand = 'fill("' + myStrokeColor + '")'
+        }
+    }
+    if (noFillSprite.mouseIsOver) {
+        myFillColor = "none"
+        lastCommand = "noFill()"
+    }
+    
+    if (paintWhite.mouseIsOver) {
+    	background("white")
+    	loadPixels()
+    	lastCommand = 'paintCanvas("white")'
+    }
+    if (paintBlack.mouseIsOver) {
+    	background("black")
+    	loadPixels()
+    	lastCommand = 'paintCanvas("black")'
+    }
+}
+
+function keyPressed() {
+    pixels = backupPixels
+    print("hali")
+    updatePixels()
+}
+
+///////////////////////////////////////////
+// custom sprite drawing functions
+
+function pointModeDraw() {
+	push()
+	stroke("black")
+	strokeWeight(1)
+	noFill()
+	rect(0, 0, 70, 30)
+	noStroke()
+	fill("black")
+	textSize(14)
+	text("point", 0, 0)
+	pop()
+}
+
+function lineModeDraw() {
+	push()
+	stroke("black")
+	strokeWeight(1)
+	noFill()
+	rect(0, 0, 70, 30)
+	noStroke()
+	fill("black")
+	textSize(14)
+	text("line", 0, 0)
+	pop()
+}
+
+function rectModeDraw() {
+	push()
+	stroke("black")
+	strokeWeight(1)
+	noFill()
+	rect(0, 0, 70, 30)
+	noStroke()
+	fill("black")
+	textSize(14)
+	text("rect", 0, 0)
+	pop()
+}
+
+function circleModeDraw() {
+	push()
+	stroke("black")
+	strokeWeight(1)
+	noFill()
+	rect(0, 0, 70, 30)
+	noStroke()
+	fill("black")
+	textSize(14)
+	text("circle", 0, 0)
+	pop()
+}
+
+function noStrokeDraw() {
+    push()
+    stroke("black")
+    strokeWeight(1)
+    noFill()
+    rect(0, 0, 62, 30)
+    noStroke()
+    fill("black")
+    textSize(14)
+    text("none", 0, 0)
+    pop()
+}
+
+function noFillDraw() {
+    push()
+    stroke("black")
+    strokeWeight(1)
+    noFill()
+    rect(0, 0, 62, 30)
+    noStroke()
+    fill("black")
+    textSize(14)
+    text("none", 0, 0)
+    pop()
+}
+
+function plusDraw() {
+    push()
+    stroke("black")
+    strokeWeight(1)
+    noFill()
+    rect(0, 0, 30, 30)
+    noStroke()
+    fill("black")
+    textSize(14)
+    text("+", 0, 0)
+    pop()
+}
+
+function minusDraw() {
+    push()
+    stroke("black")
+    strokeWeight(1)
+    noFill()
+    rect(0, 0, 30, 30)
+    noStroke()
+    fill("black")
+    textSize(14)
+    text("-", 0, 0)
+    pop()
+}
+</script>
+</html>
