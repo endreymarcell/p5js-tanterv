@@ -34,9 +34,9 @@ function preload() {
 
 // ...
 
-    function mouseClicked() {
-        playSound(cookieSound)
-    }
+function mouseClicked() {
+    playSound(cookieSound)
+}
 ```
 
 Írj egy programot, ami kolompol, ha megrázod a telefont, és azt mondja, hogy "shame!" (szégyen), ha megérinted a képernyőt. A rázáshoz használd a `deviceShaken` blokkot; az érintéshez jó lesz a `mouseClicked`.  
