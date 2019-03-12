@@ -1,8 +1,9 @@
 ## Mikrokontroller
 
 Programozás Arduino mikrokontrollerekkel  
-/// https://github.com/sarahgp/p5bots
+/// https://github.com/sarahgp/p5bots  
 /// TODO upload firmata to the boards!  
+/// Továbbá: ezt a Skool windowsos gépein nem tudtam működésre bírni, úgyhogy a lányok kölcsönmacbookokon dolgoztak.  
 
 
 ### Előkészítés
