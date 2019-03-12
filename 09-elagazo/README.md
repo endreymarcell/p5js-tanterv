@@ -56,5 +56,5 @@ Páros feladat, kettesével gyertek rá.
 ## Mikrokontroller
 [specialis/robot.md](specialis/robot/mikrokontroller.md)  
 ![](specialis/robot/arduino.png)  
-Lépj ki a számítógép virtuális teréből, és vedd kézve a hardvert! Szereld össze az áramkört a kapcsolási rajz alapján, hogy aztán a gépről irányíthasd, melyik LED világít, vagy éppen az áramkör kapcsolóival irányítsd a programjaidat.  
+Lépj ki a számítógép virtuális teréből, és vedd kézbe a hardvert! Szereld össze az áramkört a kapcsolási rajz alapján, hogy aztán a gépről irányíthasd, melyik LED világít, vagy éppen az áramkör kapcsolóival irányítsd a programjaidat.  
 Páros feladat, kettesével gyertek rá.  
