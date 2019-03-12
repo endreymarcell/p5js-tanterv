@@ -86,16 +86,17 @@ A negyedik szám a szín "láthatóságát" szabályozó, úgynevezett _alpha_ b
 
 ## Sprite-gyűlés
 /// Pusher app és autentikáció szükséges! [Részletek itt](../.private/pusher-auth/README.md).  
+/// Először indítsd el a szervert: http://jsbin.com/yokahog/edit?console,output  
+/// Illetve: [.pusher-sprite-basics/pusher-server.html](.pusher-sprite-basics/pusher-server.html)  
+/// Ezt vetítsük ki, így mindenkinek megjelennek a sprite-jai egy térben.  
 Próbáld ki a sprite-os parancsokat itt: http://jsbin.com/weduva/edit?console,output  
 /// Illetve: [.pusher-sprite-basics/pusher-client.html](.pusher-sprite-basics/pusher-client.html)  
 Közben figyeld, mi történik a kivetítőn.  
-/// Ez egy kliens, ami másodpercenként jelent az aktuális sprite-okról a szerver felé.  
-/// Szerver: http://jsbin.com/yokahog/edit?console,output  
-/// Illetve: [.pusher-sprite-basics/pusher-server.html](.pusher-sprite-basics/pusher-server.html)  
-/// Ezt vetítsük ki, így mindenkinek megjelennek a sprite-jai egy térben.  
+/// Ez meg egy kliens, ami másodpercenként jelent az aktuális sprite-okról a szerver felé.  
+/// Arra figyelj, hogy ha a kliens előbb indul el, mint a szerver, akkor hibaüzeneteket dobál a konzolra mindaddig, amíg a szerver online nem lesz.  
 
-/// Először csak hagyjuk, hogy kísérletezzenek, próbálják egymástól megkülönböztetni a sprite-jaikat.
-/// Utána azt játsszuk, hogy kémek vagyunk: az egyik mentor is bedob egy sprite-ot,
+/// Először csak hagyjuk, hogy kísérletezzenek, próbálják egymástól megkülönböztetni a sprite-jaikat.  
+/// Utána azt játsszuk, hogy kémek vagyunk: az egyik mentor is bedob egy sprite-ot,  
 /// a lányoknak pedig meg kell próbálni őt utánozni (helyben, színben, formában),  
 /// hogy "elbújjanak" a kémelhárítás elől.  
 
